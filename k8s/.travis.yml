@@ -1,0 +1,10 @@
+sudo: required
+services:
+  - docker
+before_install:
+# Setup Google Cloud SDK
+  - curl https://sdk.cloud.google.com | bash > /dev/null;
+  - source $HOME/google-cloud-sdk/path.bash.inc
+  - gcloud components update kubectl
+  # setting credentials for Travis CI to access gcloud
+  - gcloud auth activate-service-account --key-file service-account.json
