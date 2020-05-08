@@ -1,6 +1,12 @@
 sudo: required
 services:
   - docker
+env:
+  global:
+    # for labelling docker build image
+      - SHA=$(git rev-parse HEAD)
+      - CLOUDSDK_CORE_DISABLE_PROMPTS=1 
+
 before_install:
 # Setup Google Cloud SDK
   - openssl aes-256-cbc -K $encrypted_9f3b5599b056_key -iv $encrypted_9f3b5599b056_iv -in service-account.json.enc -out service-account.json -d
@@ -19,3 +25,20 @@ before_install:
 
 script:
   - docker run bnassivet/react-test npm test -- --coverage
+
+deploy:
+  provider: script
+  script: bash ./deploy.sh
+  on:
+    branch: master
+
+
+# on GCloud shell (online) where cluster id "multi-cluster-docker-k8s" has been created and running
+# kubeconfig will be set
+# see above
+# gcloud config set project <project-id>
+# gcloud config set compute/zone <zone>
+# gcloud container clusters get-credentials <cluster-id> 
+#
+# Secret creation on GCloud
+# kubectl create secret generic pgpassword --from-literal PGPASSWORD=mypgpassword123
